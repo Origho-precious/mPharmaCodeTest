@@ -29,15 +29,19 @@ const App = () => {
 		dispatch(getProducts());
 	}, [dispatch]);
 
-	const getLatestPrice = (date1, date2) => {
-		const t1 = new Date(date1).getTime();
-		const t2 = new Date(date2).getTime();
+	const getLatestPrice = (prices) => {
+		const timeStamps = prices.map((price) => {
+			return new Date(price.date).getTime();
+		});
 
-		const currentTime = new Date().getTime();
+		let latestDate = Math.max(...timeStamps);
 
-		const result = currentTime - t1 > currentTime - t2;
-
-		return result !== true ? 0 : 1;
+		for(let i = 0; i < timeStamps.length; i++){
+			const stamp = new Date(prices[i].date).getTime();
+			if(stamp === latestDate){
+				return prices[i].price
+			}
+		}
 	};
 
 	return (
@@ -66,8 +70,7 @@ const App = () => {
 									<TableCol>{name}</TableCol>
 									<TableCol>
 										{
-											prices[getLatestPrice(prices[0].date, prices[1].date)]
-												?.price
+											getLatestPrice(prices)
 										}
 									</TableCol>
 									<TableCol>
@@ -89,15 +92,7 @@ const App = () => {
 								</StyledTableRow>
 							))
 						) : (
-							<Typography
-								className={classes.noData}
-								variant="h5"
-								component="h5"
-								align="center"
-								paraghraph
-							>
-								No Data!
-							</Typography>
+							<TableBody align= 'center' className={classes.noData}>No Data!</TableBody>
 						)}
 					</TableBody>
 				</Table>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -7,17 +8,23 @@ import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import { editProductAction } from "../../store/store";
 
-const CustomModal = ({type, open, onCloseHandler}) => {
+const CustomModal = ({ type, open, onCloseHandler, id }) => {
+  const dispatch = useDispatch();
 	const classes = styles();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+	const [name, setName] = useState("");
+	const [price, setPrice] = useState("");
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    // onCloseHandler();
-    // type === 'edit' ?
-  }
+	const onSubmitHandler = (e) => {
+		e.preventDefault();
+
+		if (name && price) {
+			type === "edit" && dispatch(editProductAction(id, name, price));
+
+			onCloseHandler();
+		}
+	};
 
 	return (
 		<>
@@ -34,9 +41,7 @@ const CustomModal = ({type, open, onCloseHandler}) => {
 				<Fade in={open}>
 					<Paper className={classes.paper}>
 						<Typography variant="h6" component="h6" align="center">
-							{
-                type === 'add'? 'Add a new product' : 'Update product'
-              }
+							{type === "add" ? "Add a new product" : "Update product"}
 						</Typography>
 						<form onSubmit={onSubmitHandler} className={classes.form}>
 							<TextField
@@ -44,30 +49,31 @@ const CustomModal = ({type, open, onCloseHandler}) => {
 								fullWidth
 								margin="dense"
 								variant="outlined"
-                size='small'
+								size="small"
 								type="text"
 								id="name"
 								label="Product name"
-                value={name}
-                onChange={e => setName(e.target.value)}
+								value={name}
+								onChange={(e) => setName(e.target.value)}
 							/>
 							<TextField
 								className={classes.input}
 								fullWidth
 								margin="dense"
-                size='small'
+								size="small"
 								variant="outlined"
 								type="text"
 								id="price"
-								label="Product price"value={price}
-                onChange={e => setPrice(e.target.value)}
+								label="Product price"
+								value={price}
+								onChange={(e) => setPrice(e.target.value)}
 							/>
 							<Button
 								variant="contained"
 								size="large"
 								color="primary"
 								className={classes.button}
-                type='submit'
+								type="submit"
 							>
 								Submit
 							</Button>
@@ -92,13 +98,13 @@ const styles = makeStyles(() => ({
 	},
 	form: {
 		width: "100%",
-    marginTop: '1rem'
+		marginTop: "1rem",
 	},
 	button: {
-    width: '100%',
-    marginTop: '1rem',
-    height: '50px'
-  },
+		width: "100%",
+		marginTop: "1rem",
+		height: "50px",
+	},
 }));
 
 export default CustomModal;
