@@ -56,7 +56,9 @@ export const editProductAction = (productId, productName, price) => async (
 
 	state[idx] = updatedProduct;
 
-	dispatch(updateState(state));
+	localStorage.setItem("mPharmaProducts", JSON.stringify(state));
+
+	dispatch(getProducts());
 };
 
 export const addProductAction = (productName, price) => async (
@@ -80,26 +82,23 @@ export const addProductAction = (productName, price) => async (
 		},
 	];
 
-	dispatch(updateState(updatedProductList));
+	localStorage.setItem("mPharmaProducts", JSON.stringify(updatedProductList));
+
+	dispatch(getProducts());
 };
 
-export const deleteProductAction = (id) => async (
-	dispatch,
-	getState
-) => {
+export const deleteProductAction = (id) => async (dispatch, getState) => {
 	const { products } = getState().app;
-	
-	const selectedProduct = products.filter(
-		(product) => product.id === id
-	)[0];
 
 	const state = [...products];
 
 	const idx = state.findIndex((product) => product.id === id);
 
-	state.splice(idx, 1)
+	state.splice(idx, 1);
 
-	dispatch(updateState(state));
+	localStorage.setItem("mPharmaProducts", JSON.stringify(state));
+
+	dispatch(getProducts());
 };
 
 export default appSlice.reducer;
