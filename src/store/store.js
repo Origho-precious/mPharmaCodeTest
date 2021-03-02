@@ -15,11 +15,16 @@ const appSlice = createSlice({
 
 const { updateState } = appSlice.actions;
 
-export const getProducts = () => async (dispatch) => {
+export const fetchInitialProducts = async (dispatch) => {
 	const res = await axios.get(
 		"http://www.mocky.io/v2/5c3e15e63500006e003e9795"
 	);
-	dispatch(updateState(res.data.products));
+
+	localStorage.setItem("mPharmaProducts", JSON.stringify(res.data.products));
+};
+
+export const getProducts = () => async (dispatch) => {
+	dispatch(updateState(JSON.parse(localStorage.getItem("mPharmaProducts"))));
 };
 
 export const editProductAction = (productId, productName, price) => async (
@@ -38,7 +43,7 @@ export const editProductAction = (productId, productName, price) => async (
 		prices: [
 			...selectedProduct.prices,
 			{
-				id: Math.ceil(Math.random() + 1),
+				id: Math.ceil(Math.random() * 10),
 				price: price,
 				date: new Date().toISOString(),
 			},
@@ -52,6 +57,30 @@ export const editProductAction = (productId, productName, price) => async (
 	state[idx] = updatedProduct;
 
 	dispatch(updateState(state));
+};
+
+export const addProductAction = (productName, price) => async (
+	dispatch,
+	getState
+) => {
+	const { products } = getState().app;
+
+	const updatedProductList = [
+		...products,
+		{
+			id: Math.ceil(Math.random() * 10),
+			name: productName,
+			prices: [
+				{
+					id: Math.ceil(Math.random() * 10),
+					price: price,
+					date: new Date().toISOString(),
+				},
+			],
+		},
+	];
+
+	dispatch(updateState(updatedProductList));
 };
 
 export default appSlice.reducer;

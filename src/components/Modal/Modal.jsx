@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -8,10 +8,10 @@ import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { editProductAction } from "../../store/store";
+import { editProductAction, addProductAction } from "../../store/store";
 
 const CustomModal = ({ type, open, onCloseHandler, id }) => {
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 	const classes = styles();
 	const [name, setName] = useState("");
 	const [price, setPrice] = useState("");
@@ -20,7 +20,12 @@ const CustomModal = ({ type, open, onCloseHandler, id }) => {
 		e.preventDefault();
 
 		if (name && price) {
-			type === "edit" && dispatch(editProductAction(id, name, price));
+			type === "edit"
+				? dispatch(editProductAction(id, name, price))
+				: dispatch(addProductAction(name, price));
+
+			setName("");
+			setPrice("");
 
 			onCloseHandler();
 		}

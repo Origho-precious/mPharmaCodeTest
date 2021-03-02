@@ -9,7 +9,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import StyledTableRow from "./components/TableRow/TableRow";
 import TableCol from "./components/TableCol/TableCol";
-import { getProducts } from "./store/store";
+import { getProducts, fetchInitialProducts } from "./store/store";
 import { Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -24,6 +24,11 @@ const App = () => {
 	const [modalType, setModalType] = useState("");
 	const [showModal, setShowModal] = useState(false);
 	const [editId, setEditId] = useState("");
+
+	useEffect(() => {
+		dispatch(fetchInitialProducts);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		dispatch(getProducts());
