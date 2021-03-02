@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
@@ -13,11 +13,17 @@ import { getProducts } from "./store/store";
 import { Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import Modal from "./components/Modal/Modal";
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
 
 const App = () => {
 	const dispatch = useDispatch();
 	const { products } = useSelector((state) => state.app);
 	const classes = styles();
+	const [modalType, setModalType] = useState("");
+	const [showModal, setShowModal] = useState(false);
+	const [editId, setEditId] = useState("");
 
 	useEffect(() => {
 		dispatch(getProducts());
@@ -34,8 +40,6 @@ const App = () => {
 		return result !== true ? 0 : 1;
 	};
 
-	getLatestPrice("2019-01-01T17:16:32+00:00", "2018-11-01T17:16:32+00:00");
-
 	return (
 		<Container className={classes.root} maxWidth="lg">
 			<Typography variant="h1" component="h1" className={classes.heading}>
@@ -47,7 +51,7 @@ const App = () => {
 						<TableRow>
 							<TableCol>#</TableCol>
 							<TableCol>Product Name(s)</TableCol>
-							<TableCol>Price(s)</TableCol>
+							<TableCol>Latest Price(s)</TableCol>
 							<TableCol>Delete</TableCol>
 							<TableCol>Edit</TableCol>
 						</TableRow>
@@ -67,10 +71,20 @@ const App = () => {
 										}
 									</TableCol>
 									<TableCol>
-										<DeleteIcon className={classes.icon} />
+										<IconButton>
+											<DeleteIcon className={classes.icon} />
+										</IconButton>
 									</TableCol>
 									<TableCol>
-										<EditIcon className={classes.icon} />
+										<IconButton
+											onClick={() => {
+												setEditId(id);
+												setModalType("edit");
+												setShowModal(true);
+											}}
+										>
+											<EditIcon className={classes.icon} />
+										</IconButton>
 									</TableCol>
 								</StyledTableRow>
 							))
@@ -88,6 +102,25 @@ const App = () => {
 					</TableBody>
 				</Table>
 			</TableContainer>
+			<Button
+				variant="contained"
+				size="large"
+				color="primary"
+				className={classes.button}
+				onClick={() => {
+					setEditId("");
+					setModalType("add");
+					setShowModal(true);
+				}}
+			>
+				Add
+			</Button>
+			<Modal
+				onCloseHandler={() => setShowModal(false)}
+				type={modalType}
+				open={showModal}
+				id={editId}
+			/>
 		</Container>
 	);
 };
@@ -112,6 +145,16 @@ const styles = makeStyles({
 		left: "50%",
 		transform: "translate(-50%, 50%)",
 		width: "40%",
+	},
+	button: {
+		width: "120px",
+		backgroundColor: "#335D7E",
+		color: "#FFF",
+		marginTop: "1rem",
+
+		"&hover": {
+			backgroundColor: "#335D7E",
+		},
 	},
 });
 
