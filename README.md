@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App]
 
 In the project directory, you can run:
 
-#### `yarn start`
+#### `yarn start` or `npm start`
 Starts this app locally(localhost)
 
 # ENJOY!!!
