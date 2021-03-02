@@ -9,7 +9,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import StyledTableRow from "./components/TableRow/TableRow";
 import TableCol from "./components/TableCol/TableCol";
-import { getProducts, fetchInitialProducts } from "./store/store";
+import { getProducts, fetchInitialProducts, deleteProductAction } from "./store/store";
 import { Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -79,7 +79,7 @@ const App = () => {
 										}
 									</TableCol>
 									<TableCol>
-										<IconButton>
+										<IconButton onClick={() => dispatch(deleteProductAction(id))}>
 											<DeleteIcon className={classes.icon} />
 										</IconButton>
 									</TableCol>

@@ -34,7 +34,7 @@ export const editProductAction = (productId, productName, price) => async (
 	const { products } = getState().app;
 
 	const selectedProduct = products.filter(
-		(product, id) => product.id === productId
+		(product) => product.id === productId
 	)[0];
 
 	const updatedProduct = {
@@ -43,7 +43,7 @@ export const editProductAction = (productId, productName, price) => async (
 		prices: [
 			...selectedProduct.prices,
 			{
-				id: Math.ceil(Math.random() * 10),
+				id: new Date().toISOString(),
 				price: price,
 				date: new Date().toISOString(),
 			},
@@ -68,11 +68,11 @@ export const addProductAction = (productName, price) => async (
 	const updatedProductList = [
 		...products,
 		{
-			id: Math.ceil(Math.random() * 10),
+			id: new Date().getTime(),
 			name: productName,
 			prices: [
 				{
-					id: Math.ceil(Math.random() * 10),
+					id: new Date().toISOString(),
 					price: price,
 					date: new Date().toISOString(),
 				},
@@ -81,6 +81,25 @@ export const addProductAction = (productName, price) => async (
 	];
 
 	dispatch(updateState(updatedProductList));
+};
+
+export const deleteProductAction = (id) => async (
+	dispatch,
+	getState
+) => {
+	const { products } = getState().app;
+	
+	const selectedProduct = products.filter(
+		(product) => product.id === id
+	)[0];
+
+	const state = [...products];
+
+	const idx = state.findIndex((product) => product.id === id);
+
+	state.splice(idx, 1)
+
+	dispatch(updateState(state));
 };
 
 export default appSlice.reducer;
