@@ -168,6 +168,7 @@ const App = () => {
 const styles = makeStyles({
 	root: {
 		width: "90vw",
+		minWidth: '800px',
 		margin: "2rem auto 0",
 		position: "relative",
 	},
