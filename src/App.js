@@ -30,8 +30,6 @@ const App = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [editId, setEditId] = useState("");
 
-	let oldPrices = [];
-
 	useEffect(() => {
 		dispatch(fetchInitialProducts);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,23 +51,32 @@ const App = () => {
 		for (let i = 0; i < timeStamps.length; i++) {
 			const stamp = new Date(prices[i].date).getTime();
 
-			if (stamp !== latestDate) {
-				oldPrices.push({
-					price: prices[i].price,
-					date: prices[i].date,
-				});
-			}
-		}
-
-		console.log(oldPrices);
-
-		for (let i = 0; i < timeStamps.length; i++) {
-			const stamp = new Date(prices[i].date).getTime();
-
 			if (stamp === latestDate) {
 				return `#${prices[i].price}  (${getDate(prices[i].date)})`;
 			}
 		}
+	};
+
+	const getOldPrices = (prices) => {
+		let oldPrices = [];
+
+		const timeStamps = prices.map((price) => {
+			return new Date(price.date).getTime();
+		});
+
+		let latestDate = Math.max(...timeStamps);
+
+		for (let i = 0; i < timeStamps.length; i++) {
+			const stamp = new Date(prices[i].date).getTime();
+
+			stamp !== latestDate &&
+				oldPrices.push({
+					price: prices[i].price,
+					date: prices[i].date,
+				});
+		}
+
+		return oldPrices;
 	};
 
 	return (
@@ -99,8 +106,8 @@ const App = () => {
 									<TableCol>{name}</TableCol>
 									<TableCol>{getLatestPrice(prices)}</TableCol>
 									<TableCol>
-										{oldPrices.length
-											? oldPrices.map((price, id) => (
+										{getOldPrices(prices).length
+											? getOldPrices(prices).map((price, id) => (
 													<p key={id}>
 														#{price.price} &nbsp; ({getDate(price.date)})
 													</p>
