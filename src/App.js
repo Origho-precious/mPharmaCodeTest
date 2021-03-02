@@ -9,13 +9,18 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import StyledTableRow from "./components/TableRow/TableRow";
 import TableCol from "./components/TableCol/TableCol";
-import { getProducts, fetchInitialProducts, deleteProductAction } from "./store/store";
+import {
+	getProducts,
+	fetchInitialProducts,
+	deleteProductAction,
+} from "./store/store";
 import { Typography } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Modal from "./components/Modal/Modal";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
+import moment from "moment";
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -25,14 +30,18 @@ const App = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [editId, setEditId] = useState("");
 
+	let oldPrices = [];
+
 	useEffect(() => {
 		dispatch(fetchInitialProducts);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		dispatch(getProducts());
 	}, [dispatch]);
+
+	const getDate = (timeStamp) => moment(timeStamp).format("MMM, DD, YYYY");
 
 	const getLatestPrice = (prices) => {
 		const timeStamps = prices.map((price) => {
@@ -41,10 +50,24 @@ const App = () => {
 
 		let latestDate = Math.max(...timeStamps);
 
-		for(let i = 0; i < timeStamps.length; i++){
+		for (let i = 0; i < timeStamps.length; i++) {
 			const stamp = new Date(prices[i].date).getTime();
-			if(stamp === latestDate){
-				return prices[i].price
+
+			if (stamp !== latestDate) {
+				oldPrices.push({
+					price: prices[i].price,
+					date: prices[i].date,
+				});
+			}
+		}
+
+		console.log(oldPrices);
+
+		for (let i = 0; i < timeStamps.length; i++) {
+			const stamp = new Date(prices[i].date).getTime();
+
+			if (stamp === latestDate) {
+				return `#${prices[i].price}  (${getDate(prices[i].date)})`;
 			}
 		}
 	};
@@ -61,6 +84,7 @@ const App = () => {
 							<TableCol>#</TableCol>
 							<TableCol>Product Name(s)</TableCol>
 							<TableCol>Latest Price(s)</TableCol>
+							<TableCol>Old Prices</TableCol>
 							<TableCol>Delete</TableCol>
 							<TableCol>Edit</TableCol>
 						</TableRow>
@@ -73,13 +97,20 @@ const App = () => {
 										{index + 1}
 									</TableCol>
 									<TableCol>{name}</TableCol>
+									<TableCol>{getLatestPrice(prices)}</TableCol>
 									<TableCol>
-										{
-											getLatestPrice(prices)
-										}
+										{oldPrices.length
+											? oldPrices.map((price, id) => (
+													<p key={id}>
+														#{price.price} &nbsp; ({getDate(price.date)})
+													</p>
+											  ))
+											: "nil"}
 									</TableCol>
 									<TableCol>
-										<IconButton onClick={() => dispatch(deleteProductAction(id))}>
+										<IconButton
+											onClick={() => dispatch(deleteProductAction(id))}
+										>
 											<DeleteIcon className={classes.icon} />
 										</IconButton>
 									</TableCol>
@@ -97,7 +128,9 @@ const App = () => {
 								</StyledTableRow>
 							))
 						) : (
-							<TableBody align= 'center' className={classes.noData}>No Data!</TableBody>
+							<TableBody align="center" className={classes.noData}>
+								No Data!
+							</TableBody>
 						)}
 					</TableBody>
 				</Table>
@@ -127,7 +160,7 @@ const App = () => {
 
 const styles = makeStyles({
 	root: {
-		width: "50vw",
+		width: "90vw",
 		margin: "2rem auto 0",
 		position: "relative",
 	},
